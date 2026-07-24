@@ -8,6 +8,12 @@ Developed during the **IBM AI Agents Internship — July 2026**, this project al
 
 ---
 
+## 🌐 Live Demo
+You can try out the live deployed application here: 
+**[https://agropilot-multi-agent.streamlit.app/](https://agropilot-multi-agent.streamlit.app/)**
+
+---
+
 ## 👥 Development Team
 - Meghanath M M
 - Abaikrishna M V
@@ -24,6 +30,19 @@ Developed during the **IBM AI Agents Internship — July 2026**, this project al
 3. **WhatsApp Integration**: Dispatches verified advisories directly to the farmer's WhatsApp via Twilio.
 4. **Human-in-the-Loop**: Includes a verification gate for a human expert to review and approve the AI's recommendations before dispatching.
 5. **Analytics Dashboard**: Tracks sent advisories and geographical reach.
+
+---
+
+## 📱 Testing WhatsApp Delivery (Twilio Sandbox)
+Because this project uses the Twilio WhatsApp Sandbox for development, **any phone number you want to send a message to must first join the sandbox.**
+
+**How to join and receive messages:**
+1. Open WhatsApp on the phone that will receive the advisory.
+2. Send a message to the Twilio Sandbox Number (e.g. `+14155238886`).
+3. Send the exact join code assigned to your Twilio account (for example: `join smooth-apple`).
+4. Once Twilio replies with *"You are all set!"*, you can enter that phone number into AgroPilot and successfully receive WhatsApp advisories.
+
+*(Note: If you do not configure Twilio API keys in the `.env` file, AgroPilot will gracefully fallback to "Demo Mode" and simulate a successful send in the UI without requiring sandbox access).*
 
 ---
 
