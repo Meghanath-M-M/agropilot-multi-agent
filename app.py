@@ -135,7 +135,7 @@ def render_sidebar() -> None:
         
         st.markdown("---")
         st.markdown(f"##### {T('Developed By')}")
-        st.caption("• Meghanath M M\n\n• Abaikrishna M V\n\n• Akash K V\n\n• Michael Shan\n\n• Sobin Joseph")
+        st.caption("• Meghanath M M\n\n• Abaikrishna M V\n\n• Akash K V\n\n• Anjal P Salim\n\n• Michael Shan\n\n• Sobin Joseph")
 
 
 # ═══════════════════════════════════════════

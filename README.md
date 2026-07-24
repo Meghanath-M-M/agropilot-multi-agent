@@ -12,6 +12,7 @@ Developed during the **IBM AI Agents Internship — July 2026**, this project al
 - Meghanath M M
 - Abaikrishna M V
 - Akash K V
+- Anjal P Salim
 - Michael Shan
 - Sobin Joseph
 
