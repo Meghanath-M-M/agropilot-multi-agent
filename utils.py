@@ -15,9 +15,10 @@ def inject_custom_css() -> None:
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Zilla+Slab:wght@400;500;600;700&display=swap');
 
-        /* ── Global Typography ── */
-        html, body, [class*="css"] {
+        /* ── Global Typography & Background ── */
+        html, body, [class*="css"], .stApp {
             font-family: 'Inter', sans-serif;
+            background-color: #F7F1E1 !important;
         }
         h1, h2, h3, h4, h5, h6,
         .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {

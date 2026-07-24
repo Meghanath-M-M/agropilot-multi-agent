@@ -15,7 +15,7 @@ env.bak/
 venv.bak/
 
 # Streamlit
-.streamlit/
+.streamlit/secrets.toml
 ui_translations.json
 
 # OS
