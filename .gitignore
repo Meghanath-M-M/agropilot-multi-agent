@@ -16,7 +16,6 @@ venv.bak/
 
 # Streamlit
 .streamlit/secrets.toml
-ui_translations.json
 
 # OS
 .DS_Store
