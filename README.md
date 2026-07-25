@@ -26,12 +26,32 @@ You can try out the live deployed application here:
 
 ## 🚀 Features
 1. **Multi-Agent Architecture**: Separate intelligent agents handle Weather, Crop selection, Pest/Disease identification, and Market Intelligence concurrently.
-2. **Multi-Lingual Support**: Automatically translates advisory output to 8 Indian regional languages instantly.
-3. **WhatsApp Integration**: Dispatches verified advisories directly to the farmer's WhatsApp via Twilio.
+2. **Comprehensive Multi-Lingual Option**: Full UI localization and dynamic advisory translation across 8 Indian regional languages + English, ensuring zero language barriers for farmers.
+3. **WhatsApp Integration**: Dispatches verified advisories directly to the farmer's WhatsApp via Twilio in their chosen regional language.
 4. **Human-in-the-Loop**: Includes a verification gate for a human expert to review and approve the AI's recommendations before dispatching.
-5. **Analytics Dashboard**: Tracks sent advisories and geographical reach.
+5. **Analytics Dashboard**: Tracks sent advisories, crop distributions, and geographical reach.
 
 ---
+
+## 🌍 Multi-Lingual & Regional Option
+AgroPilot is explicitly tailored for the diverse Indian agricultural ecosystem. To bridge the digital divide and make AI advisories genuinely accessible at the grassroots level, the system incorporates a dual-layer multilingual architecture:
+
+- **Complete UI Localization**: All interface elements, form fields, buttons, navigation menus, and status indicators are localized using our custom pre-cached translation builder (`build_translations.py` and `ui_translations.json`) for lightning-fast, seamless rendering without API lag.
+- **Dynamic AI Advisory Translation**: Farm recommendations, pest remedies, market analyses, and WhatsApp messages are automatically adapted and generated in the farmer's mother tongue using Llama 3.1 via Groq.
+
+### Supported Languages:
+- 🇬🇧 **English** (Default / Global)
+- 🇮🇳 **हिंदी (Hindi)**
+- 🇮🇳 **தமிழ் (Tamil)**
+- 🇮🇳 **తెలుగు (Telugu)**
+- 🇮🇳 **ಕನ್ನಡ (Kannada)**
+- 🇮🇳 **മലയാളം (Malayalam)**
+- 🇮🇳 **मराठी (Marathi)**
+- 🇮🇳 **ਬੰਗਲਾ (Bengali)**
+- 🇮🇳 **ਪੰਜਾਬੀ (Punjabi)**
+
+---
+
 
 ## 📱 Testing WhatsApp Delivery (Twilio Sandbox)
 Because this project uses the Twilio WhatsApp Sandbox for development, **any phone number you want to send a message to must first join the sandbox.**
