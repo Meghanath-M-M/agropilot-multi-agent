@@ -116,7 +116,8 @@ try:
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1
+                temperature=0.1,
+                reasoning_format="hidden"
             )
             raw = res.choices[0].message.content.strip()
             for tag in ["environment_details", "environment_info", "meta"]:

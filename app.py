@@ -541,7 +541,8 @@ def _translate_advisory(advisory: dict, target_lang: str):
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=1000,
-                temperature=0.2
+                temperature=0.2,
+                reasoning_format="hidden"
             )
             raw = response.choices[0].message.content.strip()
             for tag in ["environment_details", "environment_info", "meta"]:
