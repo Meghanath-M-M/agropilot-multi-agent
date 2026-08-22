@@ -102,6 +102,14 @@ for text in STRINGS:
 
 print("Translating UI strings...")
 try:
+    def _repair_json(text: str) -> str:
+        text = re.sub(r"//.*", "", text)
+        text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+        text = re.sub(r",\s*([}\]])", r"\1", text)
+        text = re.sub(r"(\w)\s*:", r'"\1":', text)
+        text = text.replace("'", '"')
+        return text
+
     for lang in LANGUAGES:
         print(f"Translating to {lang}...")
         system_msg = "You are a pure JSON translation function. Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content."
@@ -124,11 +132,17 @@ try:
             start = raw.find("{")
             end = raw.rfind("}") + 1
             if start != -1 and end > start:
+                candidate = raw[start:end]
                 try:
-                    translated = json.loads(raw[start:end])
+                    translated = json.loads(candidate)
                     break
                 except json.JSONDecodeError:
-                    continue
+                    repaired = _repair_json(candidate)
+                    try:
+                        translated = json.loads(repaired)
+                        break
+                    except json.JSONDecodeError:
+                        continue
         if translated is None:
             print(f"  Failed for {lang}, skipping.")
             continue

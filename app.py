@@ -496,6 +496,14 @@ def _translate_advisory(advisory: dict, target_lang: str):
     if not config.GROQ_API_KEY:
         return "__error__: GROQ_API_KEY is not set in .env"
 
+    def _repair_json(text: str) -> str:
+        text = re.sub(r"//.*", "", text)
+        text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+        text = re.sub(r",\s*([}\]])", r"\1", text)
+        text = re.sub(r"(\w)\s*:", r'"\1":', text)
+        text = text.replace("'", '"')
+        return text
+
     try:
         from groq import Groq
         client = Groq(api_key=config.GROQ_API_KEY)
@@ -540,7 +548,7 @@ def _translate_advisory(advisory: dict, target_lang: str):
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=1000,
+                max_tokens=2000,
                 temperature=0.2
             )
             raw = response.choices[0].message.content.strip()
@@ -549,10 +557,15 @@ def _translate_advisory(advisory: dict, target_lang: str):
             start = raw.find("{")
             end = raw.rfind("}") + 1
             if start != -1 and end > start:
+                candidate = raw[start:end]
                 try:
-                    return json.loads(raw[start:end])
+                    return json.loads(candidate)
                 except json.JSONDecodeError:
-                    continue
+                    repaired = _repair_json(candidate)
+                    try:
+                        return json.loads(repaired)
+                    except json.JSONDecodeError:
+                        continue
         return "__error__: Translation service temporarily unavailable. Showing advisory in English."
     except Exception as e:
         _log.error(f"Translation error: {e}")
