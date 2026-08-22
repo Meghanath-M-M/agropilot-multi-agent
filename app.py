@@ -541,7 +541,7 @@ def _translate_advisory(advisory: dict, target_lang: str):
             f"Translate to {target_lang} and return ONLY the JSON object.\n\n"
             f"Input JSON:\n{json.dumps(payload, ensure_ascii=False)}"
         )
-        for attempt, prompt in enumerate([user_prompt, retry_prompt], 1):
+        for attempt, prompt in enumerate([user_prompt, retry_prompt, retry_prompt], 1):
             response = client.chat.completions.create(
                 model="openai/gpt-oss-20b",
                 messages=[
@@ -549,9 +549,11 @@ def _translate_advisory(advisory: dict, target_lang: str):
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=2000,
-                temperature=0.2
+                temperature=0.2,
+                reasoning_format="hidden"
             )
             raw = response.choices[0].message.content.strip()
+            raw = re.sub(r"<environment_details>.*?</environment_details>", "", raw, flags=re.DOTALL)
             raw = re.sub(r"<[^>]*>", "", raw)
             raw = raw.strip()
             start = raw.find("{")

@@ -116,7 +116,7 @@ try:
         user_prompt = f"Translate this JSON array of English UI strings to {lang}. CRITICAL: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text. Return a JSON dictionary where keys are English strings and values are translated strings.\n\n{json.dumps(STRINGS)}"
         retry_prompt = f"IMPORTANT: You MUST output ONLY valid JSON. No XML tags. No environment details. No explanations.\nTranslate to {lang} and return ONLY the JSON dictionary.\n\n{json.dumps(STRINGS)}"
         translated = None
-        for prompt in [user_prompt, retry_prompt]:
+        for prompt in [user_prompt, retry_prompt, retry_prompt]:
             res = client.chat.completions.create(
                 model="openai/gpt-oss-20b",
                 max_tokens=4000,
@@ -124,9 +124,11 @@ try:
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1
+                temperature=0.1,
+                reasoning_format="hidden"
             )
             raw = res.choices[0].message.content.strip()
+            raw = re.sub(r"<environment_details>.*?</environment_details>", "", raw, flags=re.DOTALL)
             raw = re.sub(r"<[^>]*>", "", raw)
             raw = raw.strip()
             start = raw.find("{")
