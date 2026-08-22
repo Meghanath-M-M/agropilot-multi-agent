@@ -559,7 +559,7 @@ def _translate_advisory(advisory: dict, target_lang: str):
                     return json.loads(raw[start:end])
                 except json.JSONDecodeError:
                     continue
-        return f"__error__: LLM did not return valid JSON after retries. Got: {raw[:200]}"
+        return "__error__: Translation service temporarily unavailable. Showing advisory in English."
     except Exception as e:
         _log.error(f"Translation error: {e}")
         return f"__error__: {e}"
