@@ -541,18 +541,11 @@ def _translate_advisory(advisory: dict, target_lang: str):
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=1000,
-                temperature=0.2,
-                reasoning_format="hidden"
+                temperature=0.2
             )
             raw = response.choices[0].message.content.strip()
-            for tag in ["environment_details", "environment_info", "meta"]:
-                start_tag = f"<{tag}>"
-                end_tag = f"</{tag}>"
-                start_idx = raw.find(start_tag)
-                end_idx = raw.find(end_tag)
-                if start_idx != -1 and end_idx != -1:
-                    raw = raw[:start_idx] + raw[end_idx + len(end_tag):]
-                    raw = raw.strip()
+            raw = re.sub(r"<[^>]*>", "", raw)
+            raw = raw.strip()
             start = raw.find("{")
             end = raw.rfind("}") + 1
             if start != -1 and end > start:
