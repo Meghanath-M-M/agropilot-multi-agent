@@ -106,7 +106,7 @@ try:
         prompt = f"Translate this JSON array of English UI strings to {lang}. Return ONLY a JSON dictionary where the keys are the English strings, and the values are the translated strings.\n\n{json.dumps(STRINGS)}"
         
         res = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="openai/gpt-oss-20b",
             max_tokens=4000,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
