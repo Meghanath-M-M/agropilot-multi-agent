@@ -13,6 +13,7 @@ Pages:
 import streamlit as st
 import time
 import json
+import re
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
@@ -528,11 +529,16 @@ def _translate_advisory(advisory: dict, target_lang: str):
         )
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "You are a pure JSON translation function. You must ONLY output valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content of any kind."},
+                {"role": "user", "content": prompt}
+            ],
             max_tokens=1000,
             temperature=0.2
         )
         raw = response.choices[0].message.content.strip()
+        for tag in ["environment_details", "environment_info", "meta"]:
+            raw = re.sub(rf"<{tag}>.*?</{tag}>", "", raw, flags=re.DOTALL)
         start = raw.find("{")
         end = raw.rfind("}") + 1
         if start == -1 or end == 0:

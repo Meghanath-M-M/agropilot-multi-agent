@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import time
 
@@ -108,10 +109,16 @@ try:
         res = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             max_tokens=4000,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": "You are a pure JSON translation function. You must ONLY output valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content of any kind."},
+                {"role": "user", "content": prompt}
+            ],
             temperature=0.1
         )
-        data = json.loads(res.choices[0].message.content)
+        raw = res.choices[0].message.content.strip()
+        for tag in ["environment_details", "environment_info", "meta"]:
+            raw = re.sub(rf"<{tag}>.*?</{tag}>", "", raw, flags=re.DOTALL)
+        data = json.loads(raw)
         
         for text in STRINGS:
             translations[text][lang] = data.get(text, text)
