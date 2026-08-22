@@ -194,7 +194,7 @@ Now {task_instruction} Respond ONLY with valid JSON:"""
                 self.groq_url,
                 headers=self.headers,
                 json={
-                    "model": "llama-3.3-70b-versatile",
+                    "model": "llama3-70b-8192",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
                     "response_format": {"type": "json_object"}
@@ -288,7 +288,7 @@ class PestAgent:
                 self.groq_url,
                 headers=self.headers,
                 json={
-                    "model": "llama-3.3-70b-versatile",
+                    "model": "openai/gpt-oss-20b",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
                     "response_format": {"type": "json_object"}
@@ -364,7 +364,7 @@ Respond ONLY with valid JSON:"""
                 self.groq_url,
                 headers=self.headers,
                 json={
-                    "model": "llama-3.3-70b-versatile",
+                    "model": "llama3-70b-8192",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
                     "response_format": {"type": "json_object"}
