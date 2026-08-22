@@ -110,7 +110,8 @@ try:
             max_tokens=4000,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            reasoning_format="hidden"
         )
         data = json.loads(res.choices[0].message.content)
         

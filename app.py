@@ -530,7 +530,8 @@ def _translate_advisory(advisory: dict, target_lang: str):
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1000,
             temperature=0.2,
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            reasoning_format="hidden"
         )
         raw = response.choices[0].message.content.strip()
         start = raw.find("{")

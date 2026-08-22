@@ -197,7 +197,8 @@ Now {task_instruction} Respond ONLY with valid JSON:"""
                     "model": "openai/gpt-oss-120b",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
-                    "response_format": {"type": "json_object"}
+                    "response_format": {"type": "json_object"},
+                    "reasoning_format": "hidden"
                 },
                 timeout=15
             )
@@ -291,7 +292,8 @@ class PestAgent:
                     "model": "openai/gpt-oss-120b",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
-                    "response_format": {"type": "json_object"}
+                    "response_format": {"type": "json_object"},
+                    "reasoning_format": "hidden"
                 },
                 timeout=15
             )
@@ -367,7 +369,8 @@ Respond ONLY with valid JSON:"""
                     "model": "openai/gpt-oss-120b",
                     "temperature": 0.6, 
                     "messages": [{"role": "user", "content": prompt}], 
-                    "response_format": {"type": "json_object"}
+                    "response_format": {"type": "json_object"},
+                    "reasoning_format": "hidden"
                 },
                 timeout=15
             )
