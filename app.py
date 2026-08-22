@@ -520,36 +520,46 @@ def _translate_advisory(advisory: dict, target_lang: str):
             "storage_tips": market.get("storage_tips", ""),
             "market_strategy": market.get("market_strategy", ""),
         }
-        prompt = (
+        system_msg = "You are a pure JSON translation function. Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content."
+        user_prompt = (
             f"Translate the following agricultural advisory JSON fields to {target_lang}.\n"
-            "CRITICAL INSTRUCTION: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no extra content.\n"
+            "CRITICAL: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no extra content.\n"
             "Return a JSON object with the SAME keys, values translated.\n"
             "Do NOT translate numbers, dates, or technical chemical names.\n\n"
             f"Input JSON:\n{json.dumps(payload, ensure_ascii=False)}"
         )
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
-            messages=[
-                {"role": "system", "content": "You are a pure JSON translation function. You must ONLY output valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content of any kind."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1000,
-            temperature=0.2
+        retry_prompt = (
+            f"IMPORTANT: You MUST output ONLY valid JSON. No XML tags. No environment details. No explanations.\n"
+            f"Translate to {target_lang} and return ONLY the JSON object.\n\n"
+            f"Input JSON:\n{json.dumps(payload, ensure_ascii=False)}"
         )
-        raw = response.choices[0].message.content.strip()
-        for tag in ["environment_details", "environment_info", "meta"]:
-            start_tag = f"<{tag}>"
-            end_tag = f"</{tag}>"
-            start_idx = raw.find(start_tag)
-            end_idx = raw.find(end_tag)
-            if start_idx != -1 and end_idx != -1:
-                raw = raw[:start_idx] + raw[end_idx + len(end_tag):]
-                raw = raw.strip()
-        start = raw.find("{")
-        end = raw.rfind("}") + 1
-        if start == -1 or end == 0:
-            return f"__error__: LLM did not return valid JSON. Got: {raw[:200]}"
-        return json.loads(raw[start:end])
+        for attempt, prompt in enumerate([user_prompt, retry_prompt], 1):
+            response = client.chat.completions.create(
+                model="openai/gpt-oss-20b",
+                messages=[
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1000,
+                temperature=0.2
+            )
+            raw = response.choices[0].message.content.strip()
+            for tag in ["environment_details", "environment_info", "meta"]:
+                start_tag = f"<{tag}>"
+                end_tag = f"</{tag}>"
+                start_idx = raw.find(start_tag)
+                end_idx = raw.find(end_tag)
+                if start_idx != -1 and end_idx != -1:
+                    raw = raw[:start_idx] + raw[end_idx + len(end_tag):]
+                    raw = raw.strip()
+            start = raw.find("{")
+            end = raw.rfind("}") + 1
+            if start != -1 and end > start:
+                try:
+                    return json.loads(raw[start:end])
+                except json.JSONDecodeError:
+                    continue
+        return f"__error__: LLM did not return valid JSON after retries. Got: {raw[:200]}"
     except Exception as e:
         _log.error(f"Translation error: {e}")
         return f"__error__: {e}"

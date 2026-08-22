@@ -103,32 +103,44 @@ for text in STRINGS:
 print("Translating UI strings...")
 try:
     for lang in LANGUAGES:
-        print("Translating to next language...")
-        prompt = f"Translate this JSON array of English UI strings to {lang}. CRITICAL: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text. Return a JSON dictionary where keys are English strings and values are translated strings.\n\n{json.dumps(STRINGS)}"
-        
-        res = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
-            max_tokens=4000,
-            messages=[
-                {"role": "system", "content": "You are a pure JSON translation function. You must ONLY output valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content of any kind."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.1
-        )
-        raw = res.choices[0].message.content.strip()
-        for tag in ["environment_details", "environment_info", "meta"]:
-            start_tag = f"<{tag}>"
-            end_tag = f"</{tag}>"
-            start_idx = raw.find(start_tag)
-            end_idx = raw.find(end_tag)
-            if start_idx != -1 and end_idx != -1:
-                raw = raw[:start_idx] + raw[end_idx + len(end_tag):]
-                raw = raw.strip()
-        data = json.loads(raw)
-        
+        print(f"Translating to {lang}...")
+        system_msg = "You are a pure JSON translation function. Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no XML tags, no environment details, no extra content."
+        user_prompt = f"Translate this JSON array of English UI strings to {lang}. CRITICAL: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text. Return a JSON dictionary where keys are English strings and values are translated strings.\n\n{json.dumps(STRINGS)}"
+        retry_prompt = f"IMPORTANT: You MUST output ONLY valid JSON. No XML tags. No environment details. No explanations.\nTranslate to {lang} and return ONLY the JSON dictionary.\n\n{json.dumps(STRINGS)}"
+        translated = None
+        for prompt in [user_prompt, retry_prompt]:
+            res = client.chat.completions.create(
+                model="openai/gpt-oss-20b",
+                max_tokens=4000,
+                messages=[
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1
+            )
+            raw = res.choices[0].message.content.strip()
+            for tag in ["environment_details", "environment_info", "meta"]:
+                start_tag = f"<{tag}>"
+                end_tag = f"</{tag}>"
+                start_idx = raw.find(start_tag)
+                end_idx = raw.find(end_tag)
+                if start_idx != -1 and end_idx != -1:
+                    raw = raw[:start_idx] + raw[end_idx + len(end_tag):]
+                    raw = raw.strip()
+            start = raw.find("{")
+            end = raw.rfind("}") + 1
+            if start != -1 and end > start:
+                try:
+                    translated = json.loads(raw[start:end])
+                    break
+                except json.JSONDecodeError:
+                    continue
+        if translated is None:
+            print(f"  Failed for {lang}, skipping.")
+            continue
         for text in STRINGS:
-            translations[text][lang] = data.get(text, text)
-            
+            translations[text][lang] = translated.get(text, text)
+        
         time.sleep(30)
             
     with open("ui_translations.json", "w", encoding="utf-8") as f:
