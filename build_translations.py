@@ -103,15 +103,13 @@ print("Translating UI strings...")
 try:
     for lang in LANGUAGES:
         print("Translating to next language...")
-        prompt = f"Translate this JSON array of English UI strings to {lang}. Return ONLY a JSON dictionary where the keys are the English strings, and the values are the translated strings.\n\n{json.dumps(STRINGS)}"
+        prompt = f"Translate this JSON array of English UI strings to {lang}. CRITICAL: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text. Return a JSON dictionary where keys are English strings and values are translated strings.\n\n{json.dumps(STRINGS)}"
         
         res = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             max_tokens=4000,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            response_format={"type": "json_object"},
-            reasoning_format="hidden"
+            temperature=0.1
         )
         data = json.loads(res.choices[0].message.content)
         

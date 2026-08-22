@@ -521,7 +521,8 @@ def _translate_advisory(advisory: dict, target_lang: str):
         }
         prompt = (
             f"Translate the following agricultural advisory JSON fields to {target_lang}.\n"
-            "Return ONLY a valid JSON object with the SAME keys, values translated.\n"
+            "CRITICAL INSTRUCTION: Output ONLY valid raw JSON. No markdown fences, no explanations, no reasoning text, no extra content.\n"
+            "Return a JSON object with the SAME keys, values translated.\n"
             "Do NOT translate numbers, dates, or technical chemical names.\n\n"
             f"Input JSON:\n{json.dumps(payload, ensure_ascii=False)}"
         )
@@ -529,9 +530,7 @@ def _translate_advisory(advisory: dict, target_lang: str):
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1000,
-            temperature=0.2,
-            response_format={"type": "json_object"},
-            reasoning_format="hidden"
+            temperature=0.2
         )
         raw = response.choices[0].message.content.strip()
         start = raw.find("{")
